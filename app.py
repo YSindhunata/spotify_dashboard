@@ -6,7 +6,6 @@ from dash import Dash, dcc, html
 import dash_bootstrap_components as dbc
 
 # Pastikan path ke file CSV benar
-# Ganti path ini dengan path yang benar ke file CSV Anda
 csv_file_path = 'D:/SINAU/spotify_dashboard/spotify_dashboard/Spotify_2010_2019.csv'
 
 # Membaca data
@@ -43,29 +42,38 @@ fig_songs = px.line(df.sort_values(by='pop', ascending=False).head(20), x='title
 fig_songs.update_layout(xaxis_title='Title of Song', yaxis_title='Popularity (pop)', title_font_size=20, title_x=0.5)
 
 # Inisialisasi Dash
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
 
-app.layout = html.Div(children=[
-    html.H1(children='Spotify Data Dashboard'),
-    html.Div(children='''Dashboard yang menampilkan visualisasi data Spotify 2010-2019.'''),
-    
-    dcc.Graph(
-        id='feature-distribution',
-        figure=fig_histograms
-    ),
-    dcc.Graph(
-        id='total-songs-genres',
-        figure=fig_genres
-    ),
-    dcc.Graph(
-        id='top-20-singers',
-        figure=fig_singers
-    ),
-    dcc.Graph(
-        id='top-20-songs',
-        figure=fig_songs
-    )
-])
+# Navbar
+navbar = dbc.Navbar(
+    dbc.Container([
+        dbc.Row([
+            dbc.Col(dbc.NavbarBrand("Spotify Data Dashboard", className="ml-auto")),
+        ], justify="center", align="center", className="w-100"),
+    ]),
+    color="primary",
+    dark=True,
+)
+
+# Layout Dashboard
+app.layout = dbc.Container([
+    navbar,
+    html.Br(),
+    html.Div(children='''Dashboard yang menampilkan visualisasi data Spotify 2010-2019''', style={'textAlign': 'center'}),
+    html.Br(),
+    dbc.Row([
+        dbc.Col(dbc.Card(dbc.CardBody(dcc.Graph(id='feature-distribution', figure=fig_histograms))), width=12),
+    ]),
+    html.Br(),
+    dbc.Row([
+        dbc.Col(dbc.Card(dbc.CardBody(dcc.Graph(id='total-songs-genres', figure=fig_genres))), width=6),
+        dbc.Col(dbc.Card(dbc.CardBody(dcc.Graph(id='top-20-singers', figure=fig_singers))), width=6),
+    ]),
+    html.Br(),
+    dbc.Row([
+        dbc.Col(dbc.Card(dbc.CardBody(dcc.Graph(id='top-20-songs', figure=fig_songs))), width=12),
+    ]),
+], fluid=True)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
